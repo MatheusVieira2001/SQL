@@ -77,7 +77,6 @@ INSERT INTO forma_pagamento (descricao, taxa) VALUES ('Cartão de crédito', 0.0
 INSERT INTO forma_pagamento (descricao, taxa) VALUES ('Boleto bancário', 0.05);
 
 INSERT INTO pedido (data_pedido, data_entrega, status_entrega, codigo_rastreio, cliente_id, forma_pagamento_id) VALUES ('2023-05-05', '2023-05-10', 'Em trânsito', 'ABC123', 1, 1);
-INSERT INTO pedido_produto (pedido_id, produto_id, quantidade
 
 /*consultas*/
 Quantos pedidos foram feitos por cada cliente?
