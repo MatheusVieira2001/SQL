@@ -147,3 +147,51 @@ SELECT p.id, e.status, e.codigo_rastreio
 FROM pedido p
 JOIN entrega e ON p.id = e.pedido_id
 WHERE e.status = 'entregue';
+                            
+/*Consultas 2*/
+ Recuperação simples com SELECT Statement:
+a. Selecione todos os produtos da tabela de produtos:
+SELECT * FROM produtos;
+
+b. Selecione apenas o nome e o preço dos produtos da tabela de produtos:
+SELECT nome, preco FROM produtos;
+
+Filtros com WHERE Statement:
+a. Selecione apenas os produtos que têm um preço maior do que R$ 100:
+SELECT * FROM produtos WHERE preco > 100;
+                            
+b. Selecione apenas os clientes que têm um nome que começa com a letra "A":
+SELECT * FROM clientes WHERE nome LIKE 'A%';
+
+Crie expressões para gerar atributos derivados:
+a. Adicione uma coluna chamada "valor_total" que multiplique o preço e a quantidade de cada produto:
+SELECT nome, preco, quantidade, preco*quantidade AS valor_total FROM produtos;
+                            
+b. Adicione uma coluna chamada "idade" que calcule a idade atual dos clientes, a partir da data de nascimento:
+SELECT nome, data_nascimento, YEAR(CURRENT_DATE()) - YEAR(data_nascimento) AS idade FROM clientes;
+
+Defina ordenações dos dados com ORDER BY:
+a. Ordene os produtos por ordem crescente de preço:
+SELECT * FROM produtos ORDER BY preco ASC;
+
+b. Ordene os clientes por ordem alfabética do nome:
+SELECT * FROM clientes ORDER BY nome ASC;
+
+Condições de filtros aos grupos – HAVING Statement:
+a. Selecione apenas os produtos que tiveram mais de 10 unidades vendidas:
+SELECT produto_id, SUM(quantidade) AS total_vendido FROM pedidos_produtos GROUP BY produto_id HAVING total_vendido > 10;
+
+b. Selecione apenas os clientes que fizeram mais de 3 pedidos:
+SELECT cliente_id, COUNT(*) AS total_pedidos FROM pedidos GROUP BY cliente_id HAVING total_pedidos > 3;
+
+6. Crie junções entre tabelas para fornecer uma perspectiva mais complexa dos dados:
+a. Selecione o nome do cliente e o nome do produto para cada pedido:
+SELECT clientes.nome AS cliente, produtos.nome AS produto FROM pedidos
+JOIN clientes ON clientes.id = pedidos.cliente_id
+JOIN pedidos_produtos ON pedidos_produtos.pedido_id = pedidos.id
+JOIN produtos ON produtos.id = pedidos_produtos.produto_id;
+
+b. Selecione o nome do fornecedor e o nome do produto para cada estoque:
+SELECT fornecedores.nome AS fornecedor, produtos.nome AS produto, estoques.quantidade FROM estoques
+JOIN produtos ON produtos.id = estoques.produto_id
+JOIN fornecedores ON fornecedores.id = estoques.fornecedor_id;                           
