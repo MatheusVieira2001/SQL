@@ -4,7 +4,7 @@ CREATE TABLE cliente (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
   tipo ENUM('PJ', 'PF') NOT NULL,
-  cpf_cnpj VARCHAR(14) NOT NULL UNIQUE,
+  cpf_cnpj VARCHAR(22) NOT NULL UNIQUE,
   endereco VARCHAR(255) NOT NULL
 );
 
@@ -26,6 +26,11 @@ CREATE TABLE pedido (
   FOREIGN KEY (forma_pagamento_id) REFERENCES forma_pagamento(id)
 );
 
+CREATE TABLE fornecedor (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE produto (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255) NOT NULL,
@@ -35,18 +40,15 @@ CREATE TABLE produto (
   FOREIGN KEY (fornecedor_id) REFERENCES fornecedor(id)
 );
 
-CREATE TABLE fornecedor (
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  nome VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE pedido_produto (
   pedido_id INT NOT NULL,
   produto_id INT NOT NULL,
   quantidade INT NOT NULL,
+  vendedor_id INT NULL,
   PRIMARY KEY (pedido_id, produto_id),
   FOREIGN KEY (pedido_id) REFERENCES pedido(id),
-  FOREIGN KEY (produto_id) REFERENCES produto(id)
+  FOREIGN KEY (produto_id) REFERENCES produto(id),
+  FOREIGN KEY (vendedor_id) REFERENCES vendedor(id)
 );
 
 CREATE TABLE vendedor (
@@ -54,21 +56,14 @@ CREATE TABLE vendedor (
   nome VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE vendedor_fornecedor (
-  vendedor_id INT NOT NULL,
-  fornecedor_id INT NOT NULL,
-  PRIMARY KEY (vendedor_id, fornecedor_id),
-  FOREIGN KEY (vendedor_id) REFERENCES vendedor(id),
-  FOREIGN KEY (fornecedor_id) REFERENCES fornecedor(id)
-);
-
-
 /*INSERTS_BASE*/
-INSERT INTO cliente (nome, tipo, cpf_cnpj, endereco) VALUES ('João da Silva', 'PF', '111.111.111-11', 'Rua A, 123');
-INSERT INTO cliente (nome, tipo, cpf_cnpj, endereco) VALUES ('Empresa XYZ', 'PJ', '11.111.111/0001-11', 'Rua B, 456');
+INSERT INTO cliente (nome, tipo, cpf_cnpj, endereco) VALUES ('Cliente A', 'PF', '111.111.111-11', 'Rua A, 123');
+INSERT INTO cliente (nome, tipo, cpf_cnpj, endereco) VALUES ('Empresa A', 'PJ', '11.111.111/0001-11', 'Rua B, 456');
 
 INSERT INTO fornecedor (nome) VALUES ('Fornecedor 1');
 INSERT INTO fornecedor (nome) VALUES ('Fornecedor 2');
+
+INSERT INTO VENDEDOR (nome) values ('VENDEDOR_1')
 
 INSERT INTO produto (nome, preco, fornecedor_id, estoque) VALUES ('Produto 1', 10.0, 1, 100);
 INSERT INTO produto (nome, preco, fornecedor_id, estoque) VALUES ('Produto 2', 20.0, 2, 50);
@@ -78,17 +73,15 @@ INSERT INTO forma_pagamento (descricao, taxa) VALUES ('Boleto bancário', 0.05);
 
 INSERT INTO pedido (data_pedido, data_entrega, status_entrega, codigo_rastreio, cliente_id, forma_pagamento_id) VALUES ('2023-05-05', '2023-05-10', 'Em trânsito', 'ABC123', 1, 1);
 
+INSERT INTO pedido_produto (pedido_id, produto_id, quantidade, vendedor_id) VALUES(1, 1, 1, 1);
+
+
 /*consultas*/
 Quantos pedidos foram feitos por cada cliente?
 SELECT c.nome, COUNT(p.id) as total_pedidos
 FROM cliente c
 JOIN pedido p ON c.id = p.cliente_id
 GROUP BY c.nome;
-
-Algum vendedor também é fornecedor?
-SELECT v.nome as nome_vendedor, f.nome as nome_fornecedor
-FROM vendedor v
-JOIN fornecedor f ON v.id = f.vendedor_id;
 
 Relação de produtos fornecedores e estoques;
 SELECT p.nome as nome_produto, f.nome as nome_fornecedor, e.quantidade
