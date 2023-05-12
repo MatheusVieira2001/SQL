@@ -73,7 +73,36 @@ SELECT n.nspname,
 from pg_indexes 
 order by tamanho desc
 /*Para praticidade filtre pelo schema e/ou tabela*/
- 
+SELECT
+	 table_name,
+	 pg_size_pretty(table_size)   || ' (' || CASE WHEN total_size = 0 THEN 0.00 ELSE round(table_size * 100 / total_size) END   || ' %)' AS table_size,
+	 pg_size_pretty(indexes_size) || ' (' || CASE WHEN total_size = 0 THEN 0.00 ELSE round(indexes_size * 100 / total_size) END || ' %)' AS indexes_size,
+	 pg_size_pretty(total_size)                                                                                                          AS total_size
+FROM (
+	(SELECT
+		table_name,
+		pg_table_size(table_name)          AS table_size,
+		pg_indexes_size(table_name)        AS indexes_size,
+		pg_total_relation_size(table_name) AS total_size
+	FROM (
+		SELECT ('"' || table_schema || '"."' || table_name || '"') AS table_name
+		FROM information_schema.tables
+		WHERE NOT table_schema IN ('pg_catalog', 'information_schema')
+	) AS all_tables
+	ORDER BY total_size DESC)
+	UNION ALL
+	(SELECT
+		'TOTAL',
+		sum(pg_table_size(table_name))          AS table_size,
+		sum(pg_indexes_size(table_name))        AS indexes_size,
+		sum(pg_total_relation_size(table_name)) AS total_size
+	FROM (
+		SELECT ('"' || table_schema || '"."' || table_name || '"') AS table_name
+		FROM information_schema.tables
+		WHERE NOT table_schema IN ('pg_catalog', 'information_schema')
+	) AS all_tables)
+
+) AS pretty_sizes;
 
  --Quantidade de registro por schema individual
 SELECT n.nspname,
