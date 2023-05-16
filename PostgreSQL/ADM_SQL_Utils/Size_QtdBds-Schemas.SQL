@@ -114,3 +114,20 @@ SELECT n.nspname,
  GROUP BY n.nspname
  
  
+ 
+ --Listar as tabelas e a quantidade de colunas por tabela
+ Select c.relname as tabela, count(a.attname) as total_colunas  
+from pg_catalog.pg_attribute a 
+inner join pg_stat_user_tables c on a.attrelid = c.relid
+WHERE
+a.attnum > 0 AND NOT a.attisdropped AND c.schemaname = 'nome_schema'
+group by c.relname
+order by c.relname
+
+ --Listar as tabelas e as respectivas colunas
+Select c.relname, a.attname as "Coluna"  
+from pg_catalog.pg_attribute a 
+inner join pg_stat_user_tables c on a.attrelid = c.relid
+WHERE
+a.attnum > 0 AND NOT a.attisdropped and c.schemaname = 'nome_schema' and c.relname = 'nome_tabela'
+order by c.relname, a.attname
