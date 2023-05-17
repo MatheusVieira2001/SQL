@@ -131,3 +131,14 @@ inner join pg_stat_user_tables c on a.attrelid = c.relid
 WHERE
 a.attnum > 0 AND NOT a.attisdropped and c.schemaname = 'nome_schema' and c.relname = 'nome_tabela'
 order by c.relname, a.attname
+
+--SELECT table_name FROM information_schema.tables WHERE table_schema =:schema
+
+--selecionar as sequências do PostgreSQL
+SELECT * FROM information_schema.sequences;
+
+--Seleciona somente as sequências do schema public:
+SELECT * FROM information_schema.sequences WHERE sequence_schema = 'public';
+
+--Seleciona apenas os nomes das sequências:
+SELECT sequence_name FROM information_schema.sequences;
