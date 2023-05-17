@@ -142,3 +142,6 @@ SELECT * FROM information_schema.sequences WHERE sequence_schema = 'public';
 
 --Seleciona apenas os nomes das sequências:
 SELECT sequence_name FROM information_schema.sequences;
+
+/*apenas as tabelas de usuário*/
+SELECT table_name FROM information_schema.tables WHERE table_schema=:SCHEMA AND table_type='BASE TABLE'
