@@ -145,3 +145,41 @@ SELECT sequence_name FROM information_schema.sequences;
 
 /*apenas as tabelas de usuário*/
 SELECT table_name FROM information_schema.tables WHERE table_schema=:SCHEMA AND table_type='BASE TABLE'
+
+
+--Retornar Colunas + tipo  (FIREBIRD)
+SELECT
+    RF.RDB$FIELD_NAME AS COLUMN_NAME,
+    CASE F.RDB$FIELD_TYPE
+        WHEN 7 THEN 'SMALLINT'
+        WHEN 8 THEN 'INTEGER'
+        WHEN 10 THEN 'FLOAT'
+        WHEN 12 THEN 'DATE'
+        WHEN 14 THEN 'CHAR(' || (F.RDB$FIELD_LENGTH / CHAR_LENGTH(F.RDB$CHARACTER_SET_ID)) || ')'
+        WHEN 16 THEN 'BIGINT'
+        WHEN 27 THEN 'DOUBLE PRECISION'
+        WHEN 35 THEN 'TIMESTAMP'
+        WHEN 37 THEN 'VARCHAR(' || F.RDB$FIELD_LENGTH || ')'
+        WHEN 261 THEN 'BLOB'
+        ELSE 'UNKNOWN'
+    END AS DATA_TYPE
+FROM
+    RDB$RELATION_FIELDS RF
+    JOIN RDB$FIELDS F ON RF.RDB$FIELD_SOURCE = F.RDB$FIELD_NAME
+WHERE
+    RF.RDB$RELATION_NAME = 'TABLE_NAME'
+
+
+--Retornar Colunas + tipo  (PostGreSql)
+select
+    CASE
+        WHEN data_type = 'character varying' THEN 'varchar(' || character_maximum_length || ')'
+        ELSE data_type || CASE WHEN character_maximum_length IS NOT NULL THEN '(' || character_maximum_length || ')' ELSE '' END
+    END AS data_type_with_size
+FROM
+    information_schema.columns
+     where 
+   table_name = :table_name
+   and column_name = :column_name
+   and table_name NOT LIKE 'pg_%'
+   and table_name not like 'vw%'
