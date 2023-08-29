@@ -191,7 +191,7 @@ FROM
  * RETORNAR O VALOR ATUAL DA SEQUENCES COM O ALTER PARA AJUSTE
  * VALIDO PARA UM SCHEMA OU VARIOS, CUIDADO AO ALTERAR OS SEQUENCES DE SUA TABELA.
 */
-CREATE OR REPLACE FUNCTION RETORNA_SEQUENCES() RETURNS TABLE (
+CREATE OR REPLACE FUNCTION RETORNA_SEQUENCES(schema text) RETURNS TABLE (
     SEQUENCES NAME,
     VALOR_ATUAL BIGINT,
     ALTERACAO TEXT
@@ -202,7 +202,7 @@ BEGIN
     FOR sequence_record IN 
         SELECT schemaname || '.' || sequencename AS sequence_name
         FROM pg_sequences
-        WHERE schemaname = 'SCHEMA'
+        WHERE schemaname = schema
     LOOP
         EXECUTE 'SELECT last_value FROM ' || sequence_record.sequence_name INTO VALOR_ATUAL;
         ALTERACAO := 'ALTER SEQUENCE ' || sequence_record.sequence_name || ' RESTART WITH ' || (VALOR_ATUAL + 1) || ';';
@@ -211,3 +211,7 @@ BEGIN
     END LOOP;
 END;
 $$ LANGUAGE PLPGSQL;
+/* 
+Execução:
+SELECT * FROM RETORNA_SEQUENCES('schema');
+*/
